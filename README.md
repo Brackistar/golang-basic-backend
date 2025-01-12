@@ -7,4 +7,12 @@ This project is made as part of the learning curve presented by course Aprende l
 ## Tools
 | Name | Website | Purpose |
 |------|---------|---------|
-| Vercel | vercel.com | Free serverless deployment |
+| AWS Lambda | aws.amazon.com | Serverless deployment |
+| AWS API Gateway | aws.amazon.com | API Gateway for public access to private APIs |
+| AWS S3 | aws.amazon.com | Cloud storage solution for image persistence |
+| MongoDB | mongodb.com | Json based file database |
+
+---
+## Packages
+### AWS
+General package for AWS implementation of the handler for the whole back end features
