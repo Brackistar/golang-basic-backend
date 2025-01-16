@@ -34,7 +34,10 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Run Tests
+      run: go test -v ./...
+
+    - name: Test results to Json
       run: go test -v ./... -json > TestResults-${{ matrix.go-version }}.json
 
     - name: Upload Go test results
