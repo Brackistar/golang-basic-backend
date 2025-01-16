@@ -5,13 +5,13 @@ name: Go_CI
 
 on:
   push:
-    branches: [ "main","development" ]
+    branches: ["development"]
   pull_request:
     branches: [ "main" ]
 
 jobs:
 
-  build:
+  Test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -31,17 +31,5 @@ jobs:
         go get github.com/stretchr/testify
         go get go.mongodb.org/mongo-driver
 
-    - name: Build
-      run: go build -v ./...
-
     - name: Run Tests
       run: go test -v ./...
-
-    - name: Test results to Json
-      run: go test -v ./... -json > TestResults-${{ matrix.go-version }}.json
-
-    - name: Upload Go test results
-      uses: actions/upload-artifact@v4
-      with:
-        name: Go-results-${{ matrix.go-version }}
-        path: TestResults-${{ matrix.go-version }}.json
