@@ -8,8 +8,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Brackistar/golang-basic-backend/aws/handlers"
 	"github.com/Brackistar/golang-basic-backend/interfaces"
-	"github.com/Brackistar/golang-basic-backend/models"
+	"github.com/Brackistar/golang-basic-backend/shared/constants"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -57,15 +58,15 @@ func (i *AWSRequestHandler) HandleRequest(ctx context.Context, request events.AP
 	path := strings.Replace(request.PathParameters["messageboard"], os.Getenv(urlPrefix), "", -1)
 
 	con := i.ConfigManager.GetContext()
-	*con = context.WithValue(*con, models.Key("path"), path)
-	*con = context.WithValue(*con, models.Key("method"), request.HTTPMethod)
-	*con = context.WithValue(*con, models.Key("user"), secrets.UserName)
-	*con = context.WithValue(*con, models.Key("pswrd"), secrets.Password)
-	*con = context.WithValue(*con, models.Key("host"), secrets.Host)
-	*con = context.WithValue(*con, models.Key("db"), secrets.Database)
-	*con = context.WithValue(*con, models.Key("jwt"), secrets.Jwt)
-	*con = context.WithValue(*con, models.Key("body"), request.Body)
-	*con = context.WithValue(*con, models.Key("bucket"), os.Getenv(bucket))
+	*con = context.WithValue(*con, constants.CtxKeyPath, path)
+	*con = context.WithValue(*con, constants.CtxKeyMethod, request.HTTPMethod)
+	*con = context.WithValue(*con, constants.CtxKeyUser, secrets.UserName)
+	*con = context.WithValue(*con, constants.CtxKeyPswd, secrets.Password)
+	*con = context.WithValue(*con, constants.CtxKeyHost, secrets.Host)
+	*con = context.WithValue(*con, constants.CtxKeyDb, secrets.Database)
+	*con = context.WithValue(*con, constants.CtxKeyJwt, secrets.Jwt)
+	*con = context.WithValue(*con, constants.CtxKeyBdy, request.Body)
+	*con = context.WithValue(*con, constants.CtxKeyBckt, os.Getenv(bucket))
 
 	// Connect with database
 	err = i.DbManager.Connect(*con)
@@ -74,7 +75,7 @@ func (i *AWSRequestHandler) HandleRequest(ctx context.Context, request events.AP
 		return buildInternalServerErrorResponse(i.ResponseBuilder, err)
 	}
 
-	return i.ResponseBuilder.Build(), nil
+	return handlers.HandleRequest(con, &request, i.ResponseBuilder), nil
 }
 
 // Builds an *events.APIGatewayProxyResponse response using the responce builder provided, with status code 500 and with headers for json content type
