@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Brackistar/golang-basic-backend/models"
+	"github.com/Brackistar/golang-basic-backend/shared/constants"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -24,9 +24,9 @@ func (i *MongoConnectManager) GetDbName() string {
 }
 
 func (i *MongoConnectManager) Connect(ctx context.Context) error {
-	user := ctx.Value(models.Key("user")).(string)
-	pswrd := ctx.Value(models.Key("pswrd")).(string)
-	host := ctx.Value(models.Key("host")).(string)
+	user := ctx.Value(constants.CtxKeyUser).(string)
+	pswrd := ctx.Value(constants.CtxKeyPswd).(string)
+	host := ctx.Value(constants.CtxKeyHost).(string)
 	connStr := fmt.Sprintf(mongoDbConnectionString, user, pswrd, host)
 
 	var clientOptions = options.Client().ApplyURI(connStr)
@@ -49,7 +49,7 @@ func (i *MongoConnectManager) Connect(ctx context.Context) error {
 
 	i.client = client
 
-	i.dbName = ctx.Value(models.Key("db")).(string)
+	i.dbName = ctx.Value(constants.CtxKeyDb).(string)
 	return nil
 }
 

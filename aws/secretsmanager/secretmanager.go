@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/Brackistar/golang-basic-backend/interfaces"
-	"github.com/Brackistar/golang-basic-backend/models"
+	"github.com/Brackistar/golang-basic-backend/shared/models"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
