@@ -7,4 +7,5 @@ const (
 // Error messages
 const (
 	errorMongoConnFailMsg string = "connection with mongo db failed with error: %s"
+	invColNameMsg         string = "invalid collection %s"
 )

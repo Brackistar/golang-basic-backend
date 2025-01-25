@@ -30,6 +30,7 @@ jobs:
         go get github.com/aws/aws-sdk-go-v2/service/secretsmanager
         go get github.com/stretchr/testify
         go get go.mongodb.org/mongo-driver
+        go get github.com/golang-jwt/jwt/v5
 
     - name: Run Tests
       run: go test -v ./...

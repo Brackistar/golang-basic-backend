@@ -4,19 +4,19 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Brackistar/golang-basic-backend/interfaces"
+	"github.com/Brackistar/golang-basic-backend/jwt"
 	"github.com/Brackistar/golang-basic-backend/shared/constants"
+	"github.com/Brackistar/golang-basic-backend/shared/models"
 	"github.com/Brackistar/golang-basic-backend/shared/utils"
 	"github.com/aws/aws-lambda-go/events"
 )
 
 const (
-	handleBeginMsg string = "Handling request %s > %s"
-	badRqstMsg     string = "An error was found, and your request could not be processed"
-	rqstEndMsg     string = "Request handled"
-	ftlErrMsg      string = "Fatal error on method %s, path: %s, error message: %s"
-	intErrMsg      string = "An unexpected error occurred, please try again later"
+	nonAuthPaths  string = "register|login|avatar|banner"
+	authHeaderKey string = "Authorization"
 )
 
 /*
@@ -50,6 +50,15 @@ func HandleRequest(ctx *context.Context, request *events.APIGatewayProxyRequest,
 
 	responseBuilder.SetStatusCode(http.StatusBadRequest)
 
+	isOk, statusCode, msg, _ := authorize(ctx, request)
+
+	if !isOk {
+		responseBuilder.SetStatusCode(uint(statusCode))
+		responseBuilder.SetBody(msg)
+
+		return responseBuilder.Build()
+	}
+
 	switch utils.GetContextValue[string](ctx, constants.CtxKeyMethod) {
 	case "POST":
 		return handlePostRequest(ctx, request, responseBuilder)
@@ -65,4 +74,51 @@ func HandleRequest(ctx *context.Context, request *events.APIGatewayProxyRequest,
 	}
 
 	return response
+}
+
+func authorize(ctx *context.Context, request *events.APIGatewayProxyRequest) (bool, int, string, *models.Claim) {
+	log.Println("Autorizing token")
+
+	path := utils.GetContextValue[string](ctx, constants.CtxKeyPath)
+
+	if nonAuth(path) {
+		return true, http.StatusOK, "", &models.Claim{}
+	}
+
+	token := request.Headers[authHeaderKey]
+
+	invalidAuthMsg := func(msg string, status int) (bool, int, string, *models.Claim) {
+		return false, status, msg, &models.Claim{}
+	}
+
+	if len(token) == 0 {
+		return invalidAuthMsg(noTokenMsg, http.StatusUnauthorized)
+	}
+
+	claim, ok, msg, err := jwt.HandleToken(token, utils.GetContextValue[string](ctx, constants.CtxKeyJwt))
+
+	if err != nil {
+		log.Printf(unexErrAuthMsg, err)
+		return invalidAuthMsg(failAuthMsg, http.StatusUnauthorized)
+	}
+
+	if !ok {
+		log.Printf(msg, err)
+		return invalidAuthMsg(msg, http.StatusUnauthorized)
+	}
+
+	log.Println("Token auth ok")
+
+	return true, http.StatusOK, msg, claim
+}
+
+func nonAuth(path string) bool {
+	paths := strings.Split(nonAuthPaths, "|")
+	var result bool = true
+
+	for _, p := range paths {
+		result = path == p
+	}
+
+	return result
 }

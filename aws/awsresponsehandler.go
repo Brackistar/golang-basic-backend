@@ -75,6 +75,8 @@ func (i *AWSRequestHandler) HandleRequest(ctx context.Context, request events.AP
 		return buildInternalServerErrorResponse(i.ResponseBuilder, err)
 	}
 
+	*con = context.WithValue(*con, constants.CtxKeyDbManager, i.DbManager)
+
 	return handlers.HandleRequest(con, &request, i.ResponseBuilder), nil
 }
 
