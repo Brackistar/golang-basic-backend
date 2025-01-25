@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/Brackistar/golang-basic-backend/interfaces"
 	"github.com/Brackistar/golang-basic-backend/shared/constants"
+	"github.com/Brackistar/golang-basic-backend/shared/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoConnectManager struct {
-	client *mongo.Client
-	dbName string
+	dataOrigin MongoDataOrigin
 }
 
 func NewMongoConnectManager() *MongoConnectManager {
@@ -20,7 +21,7 @@ func NewMongoConnectManager() *MongoConnectManager {
 }
 
 func (i *MongoConnectManager) GetDbName() string {
-	return i.dbName
+	return i.dataOrigin.DbName
 }
 
 func (i *MongoConnectManager) Connect(ctx context.Context) error {
@@ -47,15 +48,19 @@ func (i *MongoConnectManager) Connect(ctx context.Context) error {
 
 	log.Print("Connection stablished with MongoDB")
 
-	i.client = client
+	i.dataOrigin = *CreateMongoDataOrigin(client)
 
-	i.dbName = ctx.Value(constants.CtxKeyDb).(string)
+	i.dataOrigin.DbName = utils.GetContextValue[string](&ctx, constants.CtxKeyDb)
 	return nil
+}
+
+func (i *MongoConnectManager) GetDataOrigin() interfaces.DataOrigin {
+	return &i.dataOrigin
 }
 
 // Checks connection with the Database, returns true in case connection can be stablished
 func (i *MongoConnectManager) IsConnected() bool {
-	err := i.client.Ping(context.TODO(), nil)
+	err := i.dataOrigin.Ping(context.TODO(), nil)
 
 	return err == nil
 }
