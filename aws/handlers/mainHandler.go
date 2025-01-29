@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"runtime/debug"
 	"strings"
 
 	"github.com/Brackistar/golang-basic-backend/interfaces"
@@ -37,6 +38,7 @@ func HandleRequest(ctx *context.Context, request *events.APIGatewayProxyRequest,
 
 		if r := recover(); r != nil {
 			log.Printf(ftlErrMsg, request.HTTPMethod, request.Path, r)
+			log.Println(string(debug.Stack()))
 
 			responseBuilder.Clear()
 			responseBuilder.SetStatusCode(http.StatusInternalServerError)
@@ -82,6 +84,7 @@ func authorize(ctx *context.Context, request *events.APIGatewayProxyRequest) (bo
 	path := utils.GetContextValue[string](ctx, constants.CtxKeyPath)
 
 	if nonAuth(path) {
+		log.Printf("Path doesn't require auth. Path: %s", path)
 		return true, http.StatusOK, "", &models.Claim{}
 	}
 
@@ -113,12 +116,15 @@ func authorize(ctx *context.Context, request *events.APIGatewayProxyRequest) (bo
 }
 
 func nonAuth(path string) bool {
+
+	log.Printf("Checking noAuth for path: %s", path)
 	paths := strings.Split(nonAuthPaths, "|")
-	var result bool = true
 
 	for _, p := range paths {
-		result = path == p
+		if path == p {
+			return true
+		}
 	}
 
-	return result
+	return false
 }

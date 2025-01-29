@@ -36,7 +36,8 @@ func RegisterUser(ctx *context.Context, responseBuilder interfaces.ResponseBuild
 		return responseBuilder.Build()
 	}
 
-	if len(user.Pass) != 128 {
+	if length := len(user.Pass); length != 64 {
+		log.Printf("Tried user registration with password len: %d", length)
 		responseBuilder.SetBody(fmt.Sprintf(invFieldValMsg, "Password", ""))
 		return responseBuilder.Build()
 	}
@@ -44,6 +45,8 @@ func RegisterUser(ctx *context.Context, responseBuilder interfaces.ResponseBuild
 	client := getClient(ctx)
 
 	if userExists(user.Email, client) {
+		log.Printf("User with email: %s already exists", user.Email)
+
 		responseBuilder.SetBody(usrRegExistsMsg)
 		return responseBuilder.Build()
 	}
@@ -52,6 +55,8 @@ func RegisterUser(ctx *context.Context, responseBuilder interfaces.ResponseBuild
 }
 
 func createUser(user models.User, client interfaces.DataOrigin, responseBuilder interfaces.ResponseBuilder[events.APIGatewayProxyResponse]) *events.APIGatewayProxyResponse {
+	log.Printf("Start user creation for email: %s", user.Email)
+
 	id, success, err := client.CreateRecord(constants.UsersOrigin, user)
 
 	if err != nil {
@@ -66,11 +71,16 @@ func createUser(user models.User, client interfaces.DataOrigin, responseBuilder 
 
 	responseBuilder.SetStatusCode(http.StatusCreated)
 	responseBuilder.SetBody(fmt.Sprintf(usrInserted, id.(string)))
+
+	log.Print("User created")
+
 	return responseBuilder.Build()
 }
 
 func userExists(email string, client interfaces.DataOrigin) bool {
-	val, _ := client.GetRecord(constants.UsersOrigin, []any{"email", email})
+	log.Printf("Checking for user pre-existance for email: %s", email)
+
+	val, _ := client.GetRecord(constants.UsersOrigin, "email", email)
 
 	return val != nil
 }
