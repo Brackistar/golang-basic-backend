@@ -23,7 +23,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        go get .
         go get github.com/aws/aws-lambda-go
         go get github.com/aws/aws-sdk-go-v2
         go get github.com/aws/aws-sdk-go-v2/config
@@ -31,6 +30,7 @@ jobs:
         go get github.com/stretchr/testify
         go get go.mongodb.org/mongo-driver
         go get github.com/golang-jwt/jwt/v5
+        go get .
 
     - name: Run Tests
       run: go test -v ./...
