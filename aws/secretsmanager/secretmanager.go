@@ -15,8 +15,10 @@ type AWSSecretsManager struct {
 	ConfigManager interfaces.ConfigurationManager[aws.Config]
 }
 
-func NewAWSSecretsManager() *AWSSecretsManager {
-	return &AWSSecretsManager{}
+func NewAWSSecretsManager(configManager interfaces.ConfigurationManager[aws.Config]) *AWSSecretsManager {
+	return &AWSSecretsManager{
+		ConfigManager: configManager,
+	}
 }
 
 func (i *AWSSecretsManager) GetSecrets(name string) (models.Secret, error) {
@@ -24,7 +26,10 @@ func (i *AWSSecretsManager) GetSecrets(name string) (models.Secret, error) {
 
 	log.Printf("Looking for information on secret: \"%s\"", name)
 
+	log.Println("Loading AWS Configuration")
 	svc := secretsmanager.NewFromConfig(i.ConfigManager.GetConfig())
+
+	log.Println("Downloading secrets")
 	pass, err := svc.GetSecretValue(*i.ConfigManager.GetContext(), &secretsmanager.GetSecretValueInput{
 		SecretId: aws.String(name),
 	})

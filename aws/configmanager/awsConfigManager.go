@@ -3,6 +3,7 @@ package configmanager
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -19,6 +20,8 @@ func NewAwsConfigManager() *AwsConfigManager {
 
 func (i *AwsConfigManager) InitConfig() {
 
+	log.Println("Initializing AWS Configuration")
+
 	var err error
 
 	i.ctx = context.TODO()
@@ -27,6 +30,8 @@ func (i *AwsConfigManager) InitConfig() {
 	if err != nil {
 		panic(fmt.Sprintf(errSessionIntMsg, err.Error()))
 	}
+
+	log.Println("AWS Config loaded")
 }
 
 func (i *AwsConfigManager) GetContext() *context.Context {

@@ -25,10 +25,16 @@ func (i *MongoConnectManager) GetDbName() string {
 }
 
 func (i *MongoConnectManager) Connect(ctx context.Context) error {
+
+	log.Println("Connecting with Mongo database")
+
 	user := ctx.Value(constants.CtxKeyUser).(string)
 	pswrd := ctx.Value(constants.CtxKeyPswd).(string)
 	host := ctx.Value(constants.CtxKeyHost).(string)
+	//database := ctx.Value(constants.CtxKeyDb).(string)
 	connStr := fmt.Sprintf(mongoDbConnectionString, user, pswrd, host)
+
+	log.Printf("Connection string: \"%s\"", connStr)
 
 	var clientOptions = options.Client().ApplyURI(connStr)
 
