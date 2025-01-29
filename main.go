@@ -11,7 +11,7 @@ import (
 	"github.com/Brackistar/golang-basic-backend/aws/configmanager"
 	awsconst "github.com/Brackistar/golang-basic-backend/aws/constants"
 	"github.com/Brackistar/golang-basic-backend/aws/handlers"
-	responsebuilder "github.com/Brackistar/golang-basic-backend/aws/responseBuilder"
+	responsebuilder "github.com/Brackistar/golang-basic-backend/aws/responsebuilder"
 	"github.com/Brackistar/golang-basic-backend/aws/secretsmanager"
 	"github.com/Brackistar/golang-basic-backend/db"
 	"github.com/Brackistar/golang-basic-backend/interfaces"
