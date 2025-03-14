@@ -22,7 +22,11 @@ func getUser(email string, client interfaces.DataOrigin) (models.User, error) {
 		return user, err
 	}
 
+	log.Printf("User found with email: %s", email)
+
 	user = val.(models.User)
+
+	log.Printf("User found: %+v", user)
 
 	return user, nil
 }
