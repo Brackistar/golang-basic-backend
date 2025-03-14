@@ -28,3 +28,15 @@ const (
 const (
 	usrInserted string = "User creation success. User ID: %s"
 )
+
+// Login Messages
+// Errors
+const (
+	usrPssInvalidMsg string = "Invalid password"
+	usrNotFoundMsg   string = "User not found"
+)
+
+// Messages
+const (
+	usrLoginSuccess string = "User logged in succesfuly"
+)

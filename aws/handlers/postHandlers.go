@@ -17,6 +17,7 @@ const (
 
 var endpoints map[string]func(ctx *context.Context, responseBuilder interfaces.ResponseBuilder[events.APIGatewayProxyResponse]) *events.APIGatewayProxyResponse = map[string]func(ctx *context.Context, responseBuilder interfaces.ResponseBuilder[events.APIGatewayProxyResponse]) *events.APIGatewayProxyResponse{
 	"register": routers.RegisterUser,
+	"login":    routers.Login,
 }
 
 func handlePostRequest(ctx *context.Context, request *events.APIGatewayProxyRequest, responseBuilder interfaces.ResponseBuilder[events.APIGatewayProxyResponse]) *events.APIGatewayProxyResponse {

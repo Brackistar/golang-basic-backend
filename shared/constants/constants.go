@@ -14,3 +14,7 @@ const (
 	CtxKeyBckt      models.Key = models.Key("bucket")
 	CtxKeyDbManager models.Key = models.Key("dbManager")
 )
+
+const (
+	CtxPassLenght int = 64
+)
