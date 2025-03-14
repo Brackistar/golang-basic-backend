@@ -59,6 +59,9 @@ func Login(ctx *context.Context, responseBuilder interfaces.ResponseBuilder[even
 		return responseBuilder.Build()
 	}
 
+	responseBuilder.SetBody(usrLoginFail)
+	responseBuilder.SetStatusCode(http.StatusUnauthorized)
+
 	return responseBuilder.Build()
 }
 

@@ -82,7 +82,7 @@ func userExists(email string, client interfaces.DataOrigin) bool {
 
 	val, err := getUser(email, client)
 
-	return err != nil && len(val.Email) != 0
+	return err != nil || len(val.Email) != 0
 }
 
 func getClient(ctx *context.Context) interfaces.DataOrigin {

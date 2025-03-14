@@ -39,4 +39,5 @@ const (
 // Messages
 const (
 	usrLoginSuccess string = "User logged in succesfuly"
+	usrLoginFail    string = "User login failed"
 )
