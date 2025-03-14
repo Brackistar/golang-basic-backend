@@ -36,7 +36,7 @@ func RegisterUser(ctx *context.Context, responseBuilder interfaces.ResponseBuild
 		return responseBuilder.Build()
 	}
 
-	if length := len(user.Pass); length != 64 {
+	if length := len(user.Pass); length != constants.CtxPassLenght {
 		log.Printf("Tried user registration with password len: %d", length)
 		responseBuilder.SetBody(fmt.Sprintf(invFieldValMsg, "Password", ""))
 		return responseBuilder.Build()
@@ -80,9 +80,9 @@ func createUser(user models.User, client interfaces.DataOrigin, responseBuilder 
 func userExists(email string, client interfaces.DataOrigin) bool {
 	log.Printf("Checking for user pre-existance for email: %s", email)
 
-	val, _ := client.GetRecord(constants.UsersOrigin, "email", email)
+	val, err := getUser(email, client)
 
-	return val != nil
+	return err != nil && len(val.Email) != 0
 }
 
 func getClient(ctx *context.Context) interfaces.DataOrigin {
